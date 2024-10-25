@@ -1,6 +1,6 @@
 
 import { useState, useEffect } from 'react';
-import { BsMicFill, BsSendFill, BsVolumeUpFill, BsUpload, BsX } from 'react-icons/bs';
+import { MicrophoneIcon, PaperAirplaneIcon, VolumeUpIcon, UploadIcon, XIcon } from '@heroicons/react/solid';
 import { SlideTabsExample } from '../components/navbar';
 import Sidebar from '../components/sidebar';
 
@@ -164,7 +164,7 @@ const LearningChatbot = () => {
                           className="text-blue-500 hover:text-blue-600"
                           disabled={isSpeaking}
                         >
-                          <BsVolumeUpFill className="w-4 h-4" />
+                          <VolumeUpIcon className="w-4 h-4" />
                         </button>
                       </div>
                       {msg.files && (
@@ -209,7 +209,7 @@ const LearningChatbot = () => {
                             onClick={() => removeFile(fileName)}
                             className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
                           >
-                            <BsX className="w-4 h-4" />
+                            <XIcon className="w-4 h-4" />
                           </button>
                         </div>
                       ) : (
@@ -219,7 +219,7 @@ const LearningChatbot = () => {
                             onClick={() => removeFile(fileName)}
                             className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
                           >
-                            <BsX className="w-4 h-4" />
+                            <XIcon className="w-4 h-4" />
                           </button>
                         </div>
                       )}
@@ -241,7 +241,7 @@ const LearningChatbot = () => {
                   onClick={toggleVoiceInput}
                   title={isListening ? 'Stop recording' : 'Voice input'}
                 >
-                  <BsMicFill className={`w-5 h-5 ${isListening ? 'animate-pulse' : ''}`} />
+                  <MicrophoneIcon className={`w-5 h-5 ${isListening ? 'animate-pulse' : ''}`} />
                 </button>
                 
                 <div className="flex-1 relative">
@@ -261,13 +261,13 @@ const LearningChatbot = () => {
                         onChange={handleFileUpload}
                         className="hidden"
                       />
-                      <BsUpload className="w-5 h-5 mr-5" />
+                      <UploadIcon className="w-5 h-5 mr-5" />
                     </label>
                     <button 
                       onClick={handleSend}
                       className="text-cyan-500 hover:text-cyan-500 transition-colors duration-200"
                     >
-                      <BsSendFill className="w-5 h-5" />
+                      <PaperAirplaneIcon className="w-5 h-5" />
                     </button>
                   </div>
                 </div>
