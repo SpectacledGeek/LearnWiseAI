@@ -111,9 +111,15 @@ export const logoutUser = asyncHandler(async (req, res) => {
 
 // Get Current User
 export const getCurrentUser = asyncHandler(async (req, res) => {
-  res
-    .status(200)
-    .json(new ApiResponse(200, req.user, "User fetched successfully"));
+  // Assuming req.user has already been populated by your auth middleware
+  if (!req.user) {
+    return res.status(401).json(new ApiResponse(401, null, "User not authenticated"));
+  }
+
+  const userName = req.user.name; // Assuming 'name' is a field in your user object
+  const userAvatar = req.user.avatar; // Assuming 'avatar' is a field in your user object
+
+  res.status(200).json(new ApiResponse(200, { name: userName, avatar: userAvatar }, "User fetched successfully"));
 });
 
 // Get User by ID
