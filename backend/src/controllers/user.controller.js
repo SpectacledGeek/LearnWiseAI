@@ -19,7 +19,6 @@ const generateAccessAndRefreshTokens = async (userId) => {
     throw new ApiError(500, "Error generating access and refresh tokens");
   }
 };
-
 // Register User
 export const registerUser = asyncHandler(async (req, res) => {
   const { name, email, password } = req.body;
@@ -72,9 +71,7 @@ export const loginUser = asyncHandler(async (req, res) => {
   const isPasswordValid = await user.isPasswordCorrect(password);
   if (!isPasswordValid) throw new ApiError(401, "Invalid credentials");
 
-  const { accessToken, refreshToken } = await generateAccessAndRefreshTokens(
-    user._id
-  );
+  const { accessToken, refreshToken } = await generateAccessAndRefreshTokens(user._id);
 
   const cookieOptions = {
     httpOnly: true,
@@ -84,16 +81,14 @@ export const loginUser = asyncHandler(async (req, res) => {
 
   res.cookie("accessToken", accessToken, {
     ...cookieOptions,
-    maxAge: 3600 * 1000,
+    maxAge: 15 * 60 * 1000, // 15 minutes in milliseconds
   });
   res.cookie("refreshToken", refreshToken, {
     ...cookieOptions,
-    maxAge: 7 * 24 * 3600 * 1000,
+    maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days in milliseconds
   });
 
-  const loggedInUser = await User.findById(user._id).select(
-    "-password -refreshToken"
-  );
+  const loggedInUser = await User.findById(user._id).select("-password -refreshToken");
 
   res.status(200).json({
     user: loggedInUser,
@@ -101,7 +96,6 @@ export const loginUser = asyncHandler(async (req, res) => {
     refreshToken,
   });
 });
-
 // Logout User
 export const logoutUser = asyncHandler(async (req, res) => {
   await User.findByIdAndUpdate(req.user._id, { $unset: { refreshToken: 1 } });

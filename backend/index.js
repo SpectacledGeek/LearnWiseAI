@@ -2,9 +2,13 @@ import express from "express";
 import cors from "cors";
 import mongoDB from "./src/database/db.js"; // Adjust to ES module import
 import userRoutes from "./src/routes/user.router.js"; // Adjust to ES module import
+import { config as configDotenv } from "dotenv"; // Use ES module import for dotenv
+
+// Load environment variables
+configDotenv();
 
 const app = express();
-const port = 5000;
+const port = process.env.PORT || 5000;
 
 // Initialize MongoDB
 mongoDB();
