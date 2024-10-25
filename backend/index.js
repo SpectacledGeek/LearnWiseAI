@@ -1,7 +1,7 @@
 import express from "express";
 import cors from "cors";
-import mongoDB from "./db.js"; // Adjust to ES module import
-import createUserRoutes from "./routes/CreateUser.js"; // Adjust to ES module import
+import mongoDB from "./src/database/db.js"; // Adjust to ES module import
+import createUserRoutes from "./src/models/user.model.js" // Adjust to ES module import
 
 const app = express();
 const port = 5000;
