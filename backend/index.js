@@ -1,7 +1,7 @@
 import express from "express";
 import cors from "cors";
 import mongoDB from "./src/database/db.js"; // Adjust to ES module import
-import userRoutes from "./src/models/user.model.js"; // Adjust to ES module import
+import userRoutes from "./src/routes/user.router.js"; // Adjust to ES module import
 
 const app = express();
 const port = 5000;
@@ -21,7 +21,7 @@ app.get("/", (req, res) => {
 app.use(express.json());
 
 // Use routes
-app.use("/api", userRoutes);
+app.use("/api/user", userRoutes);
 
 // Start server
 app.listen(port, () => {
