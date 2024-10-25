@@ -26,7 +26,7 @@ router.post("/login", loginUser);
 // Secured routes
 router.post("/logout", verifyJWT, logoutUser);
 
-router.route("/current-user").get(verifyJWT, getCurrentUser);
+router.get("/current", verifyJWT, getCurrentUser);
 router.get("/:id", getUserById);
 
 export default router;

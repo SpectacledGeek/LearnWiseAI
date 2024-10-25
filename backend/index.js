@@ -3,7 +3,7 @@ import cors from "cors";
 import mongoDB from "./src/database/db.js"; // Adjust to ES module import
 import userRoutes from "./src/routes/user.router.js"; // Adjust to ES module import
 import { config as configDotenv } from "dotenv"; // Use ES module import for dotenv
-
+import cookieParser from "cookie-parser";
 // Load environment variables
 configDotenv();
 
@@ -23,7 +23,7 @@ app.get("/", (req, res) => {
 
 // Middleware to parse JSON
 app.use(express.json());
-
+app.use(cookieParser()); 
 // Use routes
 app.use("/api/user", userRoutes);
 
