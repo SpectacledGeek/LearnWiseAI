@@ -1,0 +1,10 @@
+[
+    {
+        "role": "user",
+        "content": "What is the purpose of this letter?"
+    },
+    {
+        "role": "AI",
+        "content": "The purpose of this letter is for Aadi Shetty to apply for the Data Science Intern position at Parabox, highlighting his skills and experience in data science, machine learning, and Python, and expressing his enthusiasm for the role and the company's AI-based healthcare solutions."
+    }
+]
