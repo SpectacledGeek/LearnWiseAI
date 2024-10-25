@@ -4,7 +4,8 @@ import { User } from "../models/user.model.js";
 import { uploadOnCloudinary } from "../utils/cloudinary.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 
-const generateAccessAndRefereshTokens = async (userId) => {
+// Token Generation Helper
+const generateAccessAndRefreshTokens = async (userId) => {
   try {
     const user = await User.findById(userId);
     const accessToken = user.generateAccessToken();
@@ -15,82 +16,49 @@ const generateAccessAndRefereshTokens = async (userId) => {
 
     return { accessToken, refreshToken };
   } catch (error) {
-    throw new ApiError(
-      500,
-      "Something went wrong while generating referesh and access token"
-    );
+    throw new ApiError(500, "Error generating access and refresh tokens");
   }
 };
 
+// Register User
 export const registerUser = asyncHandler(async (req, res) => {
-  //get user details from frontend
-  //validation- not empty
-  //check if user already exists
-  //check for images
-  //upload them to cloudinary
-  //create user object - entry in db
-  //remove password and refresh token field from response
-  //check for user creation
-  //return res
-  console.log("yaha tih aayas");
+  const { name, email, password } = req.body;
 
-  const { fullName, email, password } = req.body;
-  console.log(email);
-  if ([fullName, email, password].some((field) => field?.trim() === "")) {
-    throw new ApiError(400, "All fields are required");
+  if ([name, email, password].some((field) => !field?.trim())) {
+    throw new ApiError(400, "All fields (name, email, password) are required");
   }
 
-  const userExists = await User.findOne({
-    $or: [{ email }],
-  });
+  const userExists = await User.findOne({ email });
 
   if (userExists) {
-    throw new ApiError(409, "User with email or username alreeady userExists.");
+    throw new ApiError(409, "User with this email already exists");
   }
 
-  // const avatarLocalPath = req.files?.avatar[0]?.path
-  // const coverImageLocalPath = req.files?.coverImage[0]?.path
-  let avatarLocalPath;
-  if (
-    req.files &&
-    Array.isArray(req.files.avatar) &&
-    req.files.avatar.length > 0
-  ) {
-    avatarLocalPath = req.files.avatar[0].path;
+  let avatarUrl = "";
+  if (req.files?.avatar?.[0]) {
+    const avatarUpload = await uploadOnCloudinary(req.files.avatar[0].path);
+    if (!avatarUpload) throw new ApiError(400, "Avatar upload failed");
+    avatarUrl = avatarUpload.url;
   }
-
-  //if you want to make avatar a required field
-
-  // if(!avatarLocalPath){
-  //    throw new ApiError(400, "Avatar file required.")
-  // }
-  console.log(avatarLocalPath);
-  const avatar = await uploadOnCloudinary(avatarLocalPath);
-
-  // if(!avatar){
-  //    throw new ApiError(400, "Avatar file required.")
-  // }
 
   const user = await User.create({
-    fullName,
-    password,
+    name,
     email,
-    avatar: avatar?.url || "",
+    password,
+    avatar: avatarUrl,
   });
 
   const createdUser = await User.findById(user._id).select(
     "-password -refreshToken"
   );
+  if (!createdUser) throw new ApiError(404, "User registration failed");
 
-  if (!createdUser) {
-    throw new ApiError(404, "something went wrong while registering the user.");
-  }
-
-  return res
+  res
     .status(201)
-    .json(new ApiResponse(200, createdUser, "User registered successfully!!"));
+    .json(new ApiResponse(201, createdUser, "User registered successfully!"));
 });
 
+// Login User
 export const loginUser = asyncHandler(async (req, res) => {
   const { email, password } = req.body;
 
@@ -99,29 +67,29 @@ export const loginUser = asyncHandler(async (req, res) => {
   }
 
   const user = await User.findOne({ email });
-
-  if (!user) {
-    throw new ApiError(404, "User does not exist");
-  }
+  if (!user) throw new ApiError(404, "User not found");
 
   const isPasswordValid = await user.isPasswordCorrect(password);
+  if (!isPasswordValid) throw new ApiError(401, "Invalid credentials");
 
-  if (!isPasswordValid) {
-    throw new ApiError(401, "Invalid credentials");
-  }
-
-  const { accessToken, refreshToken } = await generateAccessAndRefereshTokens(
+  const { accessToken, refreshToken } = await generateAccessAndRefreshTokens(
     user._id
   );
 
-  const options = {
+  const cookieOptions = {
     httpOnly: true,
-    secure: process.env.NODE_ENV === "production", // Ensure cookies are only sent over HTTPS in production
-    sameSite: "Strict", // Prevent cross-site request forgery
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "Strict",
   };
 
-  res.cookie("accessToken", accessToken, options);
-  res.cookie("refreshToken", refreshToken, options);
+  res.cookie("accessToken", accessToken, {
+    ...cookieOptions,
+    maxAge: 3600 * 1000,
+  });
+  res.cookie("refreshToken", refreshToken, {
+    ...cookieOptions,
+    maxAge: 7 * 24 * 3600 * 1000,
+  });
 
   const loggedInUser = await User.findById(user._id).select(
     "-password -refreshToken"
@@ -134,50 +102,32 @@ export const loginUser = asyncHandler(async (req, res) => {
   });
 });
 
+// Logout User
 export const logoutUser = asyncHandler(async (req, res) => {
-  await User.findByIdAndUpdate(
-    req.user._id,
-    {
-      $unset: {
-        refreshToken: 1, // this removes the field from document
-      },
-    },
-    {
-      new: true,
-    }
-  );
+  await User.findByIdAndUpdate(req.user._id, { $unset: { refreshToken: 1 } });
 
-  const options = {
-    httpOnly: true,
-    secure: true,
-  };
-  console.log("logged out succesfully");
+  const cookieOptions = { httpOnly: true, secure: true };
 
-  return res
+  res
     .status(200)
-    .clearCookie("accessToken", options)
-    .clearCookie("refreshToken", options)
-    .json(new ApiResponse(200, {}, "User logged Out"));
+    .clearCookie("accessToken", cookieOptions)
+    .clearCookie("refreshToken", cookieOptions)
+    .json(new ApiResponse(200, {}, "User logged out successfully"));
 });
 
+// Get Current User
 export const getCurrentUser = asyncHandler(async (req, res) => {
-  return res
+  res
     .status(200)
     .json(new ApiResponse(200, req.user, "User fetched successfully"));
 });
 
-export const getUserById = async (req, res) => {
-  try {
-    const userId = req.params.id;
-    const user = await User.findById(userId).select("fullname"); // Fetch only the full name field
+// Get User by ID
+export const getUserById = asyncHandler(async (req, res) => {
+  const userId = req.params.id;
 
-    if (!user) {
-      return res.status(404).json({ message: "User not found" });
-    }
+  const user = await User.findById(userId).select("name avatar email");
+  if (!user) return res.status(404).json({ message: "User not found" });
 
-    res.json({ data: user });
-  } catch (error) {
-    console.error("Error fetching user details:", error);
-    res.status(500).json({ message: "Internal server error" });
-  }
-};
+  res.status(200).json({ data: user });
+});
