@@ -14,7 +14,7 @@ const port = process.env.PORT || 5000;
 mongoDB();
 
 // Use CORS with specific configuration
-app.use(cors({ origin: "http://localhost:5173" }));
+app.use(cors({ origin: "http://localhost:5173" , credentials:true}));
 
 // Define root route
 app.get("/", (req, res) => {
