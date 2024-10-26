@@ -1,5 +1,7 @@
+
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import SlideTabsExample from "../components/navbar";
 
 const ForumPage = () => {
   const [posts, setPosts] = useState([]);
@@ -10,15 +12,13 @@ const ForumPage = () => {
   const [likedPosts, setLikedPosts] = useState(new Set());
   const navigate = useNavigate();
 
-  // Add this near the top of your component, with the other state declarations
   const [currentUser, setCurrentUser] = useState({ name: "", avatar: null });
 
-  // Add this useEffect right after your posts useEffect
   useEffect(() => {
     const fetchCurrentUser = async () => {
       try {
         const response = await fetch(
-          "http://localhost:5000/api/user/current" // Adjust this endpoint to match your API
+          "http://localhost:5000/api/user/current"
         );
         const data = await response.json();
         setCurrentUser({
@@ -70,18 +70,16 @@ const ForumPage = () => {
 
     setIsSubmitting(true);
 
-    // Create a new comment object
     const newComment = {
-      _id: Date.now(), // Use timestamp as temporary ID
+      _id: Date.now(),
       content: commentText,
       createdAt: new Date().toISOString(),
       user_id: {
-        name: currentUser.name, // Use current user's name
+        name: currentUser.name,
         avatar: currentUser.avatar,
       },
     };
 
-    // Update posts state with new comment
     setPosts(
       posts.map((post) => {
         if (post._id === postId) {
@@ -94,7 +92,6 @@ const ForumPage = () => {
       })
     );
 
-    // Reset form state
     setCommentText("");
     setActiveCommentId(null);
     setIsSubmitting(false);
@@ -114,15 +111,14 @@ const ForumPage = () => {
 
       setLikedPosts(newLikedPosts);
 
-      // Update the posts state with the new like count
       setPosts(
         posts.map((post) =>
           post._id === postId
             ? {
                 ...post,
                 likes: isCurrentlyLiked
-                  ? (post.likes || 1) - 1 // Decrease by 1 when unliking
-                  : (post.likes || 0) + 1, // Increase by 1 when liking
+                  ? (post.likes || 1) - 1
+                  : (post.likes || 0) + 1,
               }
             : post
         )
@@ -145,7 +141,6 @@ const ForumPage = () => {
     } catch (error) {
       console.error("Failed to update like status:", error);
 
-      // Revert the optimistic update
       const revertedLikedPosts = new Set(likedPosts);
       if (likedPosts.has(postId)) {
         revertedLikedPosts.delete(postId);
@@ -160,8 +155,8 @@ const ForumPage = () => {
             ? {
                 ...post,
                 likes: likedPosts.has(postId)
-                  ? (post.likes || 0) - 1 // Revert the like
-                  : (post.likes || 0) + 1, // Revert the unlike
+                  ? (post.likes || 0) - 1
+                  : (post.likes || 0) + 1,
               }
             : post
         )
@@ -170,8 +165,11 @@ const ForumPage = () => {
   };
 
   return (
+    <>
+    <SlideTabsExample></SlideTabsExample>
     <div className="max-w-4xl mx-auto px-4 py-8">
-      <h1 className="text-3xl font-bold mb-8 text-gray-800">Community Forum</h1>
+      
+      <h1 className="text-4xl  mb-8 ml-[35%] text-gray-800 font-serif">Community Forum</h1>
 
       {isLoading ? (
         <div className="flex justify-center items-center h-64">
@@ -182,7 +180,7 @@ const ForumPage = () => {
           {posts.map((post) => (
             <div
               key={post._id}
-              className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden hover:shadow-md transition-shadow duration-200"
+              className="bg-gray-100 ml-[10%] rounded-lg shadow-xl border border-[#F6C722] overflow-hidden hover:shadow-md transition-shadow duration-200"
             >
               <div className="p-6">
                 <div className="flex items-center space-x-4 mb-4">
@@ -211,7 +209,7 @@ const ForumPage = () => {
 
                 <h2
                   onClick={() => navigate(`/forum/post/${post._id}`)}
-                  className="text-xl font-semibold text-gray-900 mb-2 hover:text-blue-600 cursor-pointer"
+                  className="text-xl font-semibold text-blue-900 p-2 rounded-lg mb-2 hover:text-blue-700 cursor-pointer transition-colors duration-200"
                 >
                   {post.title}
                 </h2>
@@ -222,7 +220,7 @@ const ForumPage = () => {
                       {post.content.slice(0, 200)}...
                       <button
                         onClick={() => navigate(`/forum/post/${post._id}`)}
-                        className="text-blue-600 hover:text-blue-700 ml-2"
+                        className="text-blue-900 hover:text-blue-900 ml-2"
                       >
                         Read more
                       </button>
@@ -240,10 +238,10 @@ const ForumPage = () => {
                           activeCommentId === post._id ? null : post._id
                         )
                       }
-                      className="flex items-center hover:text-blue-600"
+                      className="flex items-center text-gray-500"
                     >
                       <svg
-                        className="w-4 h-4 mr-1"
+                        className="w-4 h-4 mr-1  text-green-900 hover:text-green-700"
                         fill="none"
                         stroke="currentColor"
                         viewBox="0 0 24 24"
@@ -259,14 +257,12 @@ const ForumPage = () => {
                     </button>
                     <button
                       onClick={() => handleLikePost(post._id)}
-                      className={`flex items-center ${
+                      className={`flex items-center text-gray-500 ${
                         likedPosts.has(post._id)
-                          ? "text-blue-600"
-                          : "hover:text-blue-600"
                       }`}
                     >
                       <svg
-                        className="w-4 h-4 mr-1"
+                        className="w-4 h-4 mr-1 text-red-600 hover:text-red-700"
                         fill={
                           likedPosts.has(post._id) ? "currentColor" : "none"
                         }
@@ -285,14 +281,13 @@ const ForumPage = () => {
                   </div>
 
                   <button
-                    className="px-4 py-2 text-sm font-medium text-blue-600 hover:text-blue-700 hover:bg-blue-50 rounded-md transition-colors duration-200"
+                    className="px-4 py-2 text-md font-medium text-blue-900 rounded-md transition-colors duration-200"
                     onClick={() => navigate(`/forum/post/${post._id}`)}
                   >
                     View Discussion
                   </button>
                 </div>
 
-                {/* Display Comments Section */}
                 {post.comments && post.comments.length > 0 && (
                   <div className="mt-4 pt-4 border-t border-gray-100">
                     <h4 className="text-sm font-medium text-gray-900 mb-3">
@@ -309,7 +304,7 @@ const ForumPage = () => {
                                 className="w-full h-full object-cover"
                               />
                             ) : (
-                              <div className="w-full h-full flex items-center justify-center bg-blue-500 text-white text-sm">
+                              <div className="w-full h-full flex items-center justify-center bg-gray-400 text-white text-sm">
                                 {comment.user_id.name[0]}
                               </div>
                             )}
@@ -372,6 +367,7 @@ const ForumPage = () => {
         </div>
       )}
     </div>
+    </>
   );
 };
 
