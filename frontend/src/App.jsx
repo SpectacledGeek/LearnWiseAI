@@ -4,6 +4,7 @@ import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import Login from "./screens/Login";
 import LearningChatbot from "./screens/Chatbox";
 import ChatInterface from "./screens/ChatInterface";
+import ForumPage from "./screens/ForumPage";
 
 function App() {
   const [count, setCount] = useState(0);
