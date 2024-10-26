@@ -15,6 +15,7 @@ function App() {
           <Route path="/" element={<Login />} />
           <Route path="/chatbot" element={<LearningChatbot />} />
           <Route path="/chatinterface" element={<ChatInterface />} />
+          <Route path="/forum" element={<ForumPage />} />
         </Routes>
       </Router>
     </>
