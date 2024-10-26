@@ -9,8 +9,8 @@ import jwt from 'jsonwebtoken';
 import bcrypt from 'bcrypt';
 import { config as configDotenv } from 'dotenv';
 import cookieParser from 'cookie-parser';
-import  User  from './src/models/user.model.js';  // Import models for User and Conversation
-import  Conversation  from './src/models/conversation.model.js';  // Import models for User and Conversation
+import { User } from './src/models/user.model.js'; // Import models for User and Conversation
+import  {Conversation}  from './src/models/conversation.model.js';  // Import models for User and Conversation
 import userRoutes from './src/routes/user.router.js';
 import communityPostRouter from './src/routes/communityPost.routes.js';
 import mongoDB from './src/database/db.js';
