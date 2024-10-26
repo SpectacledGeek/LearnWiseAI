@@ -1,10 +1,13 @@
 
+
 import { useRef, useState } from "react";
 import { motion } from "framer-motion";
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import logo from "./logo.png";
 
 export const SlideTabsExample = () => {
+  const location = useLocation();
+  
   return (
     <div className="py-3 relative shadow-md flex items-center">
       {/* Logo on the left */}
@@ -14,8 +17,12 @@ export const SlideTabsExample = () => {
       
       {/* Navigation buttons */}
       <div className="ml-[7%] flex gap-4">
-        <NavButton to="/chatbot">Chatbot</NavButton>
-        <NavButton to="/forum">Community</NavButton>
+        <NavButton to="/chatbot" isActive={location.pathname === '/chatbot'}>
+          Chatbot
+        </NavButton>
+        <NavButton to="/forum" isActive={location.pathname === '/forum'}>
+          Community
+        </NavButton>
       </div>
       
       {/* Sign out button pushed to the right */}
@@ -26,7 +33,7 @@ export const SlideTabsExample = () => {
   );
 };
 
-const NavButton = ({ children, to }) => {
+const NavButton = ({ children, to, isActive }) => {
   const [hovered, setHovered] = useState(false);
   const [position, setPosition] = useState({
     opacity: 0,
@@ -46,10 +53,12 @@ const NavButton = ({ children, to }) => {
   };
 
   const handleMouseLeave = () => {
-    setPosition(prev => ({
-      ...prev,
-      opacity: 0,
-    }));
+    if (!isActive) {
+      setPosition(prev => ({
+        ...prev,
+        opacity: 0,
+      }));
+    }
     setHovered(false);
   };
 
@@ -62,22 +71,28 @@ const NavButton = ({ children, to }) => {
     >
       <button
         onClick={() => navigate(to)}
-        className="relative z-10 px-4 py-2 text-sm font-semibold uppercase border border-[#F6C722] rounded-full hover:text-black transition-all duration-300"
+        className={`relative z-10 px-4 py-2 text-sm font-semibold uppercase border rounded-full transition-all duration-300 ${
+          isActive 
+            ? 'border-[#F6C722] text-black bg-[#F6C722]' 
+            : 'border-[#F6C722] hover:text-black'
+        }`}
       >
         {children}
       </button>
-      <motion.div
-        animate={{
-          width: position.width,
-          opacity: position.opacity,
-        }}
-        transition={{
-          type: "spring",
-          stiffness: 500,
-          damping: 30,
-        }}
-        className="absolute inset-0 rounded-full bg-[#F6C722] -z-10"
-      />
+      {!isActive && (
+        <motion.div
+          animate={{
+            width: position.width,
+            opacity: position.opacity,
+          }}
+          transition={{
+            type: "spring",
+            stiffness: 500,
+            damping: 30,
+          }}
+          className="absolute inset-0 rounded-full bg-[#F6C722] -z-10"
+        />
+      )}
     </div>
   );
 };
