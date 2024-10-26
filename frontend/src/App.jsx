@@ -1,14 +1,10 @@
-import  React,{ useState } from 'react'
-import './App.css'
-import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
-import Login from './screens/Login';
-import LearningChatbot from './screens/Chatbox';
+import React, { useState } from "react";
+import "./App.css";
+import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
+import Login from "./screens/Login";
+import LearningChatbot from "./screens/Chatbox";
+import ChatInterface from "./screens/ChatInterface";
 import ForumPage from './screens/ForumPage';
-import ChatInterface from './screens/ChatInterface';
-
-
-
-
 
 function App() {
   const [count, setCount] = useState(0)
