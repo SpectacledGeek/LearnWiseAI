@@ -1,6 +1,6 @@
 
 import { useState, useEffect } from 'react';
-import { MicrophoneIcon, PaperAirplaneIcon, VolumeUpIcon, UploadIcon, XIcon } from '@heroicons/react/solid';
+import { BsMicFill, BsUpload, BsVolumeUpFill, BsSendFill, BsX } from 'react-icons/bs';
 import { SlideTabsExample } from '../components/navbar';
 
 export default function Component() {

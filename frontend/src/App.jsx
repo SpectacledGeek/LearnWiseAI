@@ -1,11 +1,11 @@
-import React,{ useState } from 'react'
+import  React,{ useState } from 'react'
 import './App.css'
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import Login from './screens/Login';
 import LearningChatbot from './screens/Chatbox';
 
 
-function App() {  
+
 
 
 function App() {
@@ -25,4 +25,4 @@ function App() {
   )
 }
 
-export default App
+export default App;
