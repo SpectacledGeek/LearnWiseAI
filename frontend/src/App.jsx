@@ -3,7 +3,7 @@ import './App.css'
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import Login from './screens/Login';
 import LearningChatbot from './screens/Chatbox';
-
+import ChatInterface from './screens/ChatInterface';
 
 
 
@@ -17,7 +17,7 @@ function App() {
       <Routes>
         <Route path="/" element={<Login/>}/>
         <Route path="/chatbot" element={<LearningChatbot/>} />
-        
+        <Route path='/chatinterface' element={<ChatInterface/>}/>
 
       </Routes>
     </Router>
