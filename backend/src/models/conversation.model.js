@@ -1,22 +1,37 @@
-const conversationSchema = new mongoose.Schema({
-  userId: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "User",
-    required: true,
+// models/Conversation.js
+import mongoose from "mongoose";
+
+const messageSchema = new mongoose.Schema(
+  {
+    role: {
+      type: String,
+      enum: ["user", "bot"],
+      required: true,
+    },
+    content: {
+      type: String,
+      required: true,
+    },
+    timestamp: {
+      type: Date,
+      default: Date.now,
+    },
   },
-  type: {
-    type: String,
-    enum: ["notes", "mcqs"],
-    required: true,
+  { _id: false }
+);
+
+const conversationSchema = new mongoose.Schema(
+  {
+    user: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      required: true,
+    },
+    messages: [messageSchema],
   },
-  startTime: {
-    type: Date,
-    default: Date.now,
-  },
-  lastUpdated: {
-    type: Date,
-    default: Date.now,
-  },
-});
+  {
+    timestamps: true,
+  }
+);
 
 export const Conversation = mongoose.model("Conversation", conversationSchema);
