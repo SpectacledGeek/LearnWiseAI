@@ -27,6 +27,12 @@ const userSchema = new mongoose.Schema(
     refreshToken: {
       type: String,
     },
+    conversations: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Conversation",
+      },
+    ],
   },
   {
     timestamps: true,
@@ -63,7 +69,5 @@ userSchema.methods.generateRefreshToken = function () {
     expiresIn: process.env.REFRESH_TOKEN_EXPIRY,
   });
 };
-
-
 
 export const User = mongoose.model("User", userSchema);
