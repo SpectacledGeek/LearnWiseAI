@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 
 function Home() {
     const [userName, setUserName] = useState('');
@@ -65,3 +65,4 @@ function Home() {
 }
 
 export default Home;
+
