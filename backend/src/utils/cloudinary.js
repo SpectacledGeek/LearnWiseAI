@@ -4,9 +4,9 @@ import { ApiError } from "./ApiError.js"; // Custom error class
 
 // Cloudinary Configuration
 cloudinary.config({
-  cloud_name: "diucrghzf",
-  api_key: "876229891194841",
-  api_secret: "FjVYAKFUEqAMKuMpLmdDkEZn9b4",
+  cloud_name: process.env.CLOUD_NAME,
+  api_key: process.env.API_KEY,
+  api_secret: process.env.API_SECRET,
   // secure: true, // Ensure HTTPS for secure transfers
 });
 
