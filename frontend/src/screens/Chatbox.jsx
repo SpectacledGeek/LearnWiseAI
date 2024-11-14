@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { BsMicFill, BsUpload, BsVolumeUpFill, BsSendFill, BsX } from 'react-icons/bs';
 import { SlideTabsExample } from '../components/navbar';
@@ -21,10 +20,8 @@ export default function Component() {
   const [isSpeaking, setIsSpeaking] = useState(false);
   const [isListening, setIsListening] = useState(false);
   const [attachments, setAttachments] = useState(new Map());
-  const [isCollapsed, setIsCollapsed] = useState(false);
   const [recognition, setRecognition] = useState(null);
   const [response, setResponse] = useState('');
-  const [file, setFile] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
@@ -34,9 +31,9 @@ export default function Component() {
           method: 'GET',
           credentials: 'include'
         });
-        
+
         if (!response.ok) throw new Error('Failed to fetch user data');
-        
+
         const json = await response.json();
         if (json.success) {
           setUserName(json.data.name);
@@ -76,7 +73,7 @@ export default function Component() {
   // Chat functionality
   const sendMessage = async () => {
     if (!message.trim()) return;
-    
+
     setIsLoading(true);
     try {
       const result = await fetch('http://127.0.0.1:5000/api/chat', {
@@ -94,7 +91,7 @@ export default function Component() {
 
       const data = await result.json();
       setResponse(data.response);
-      setMessages([...messages, 
+      setMessages([...messages,
         { text: message, type: 'user', files: Array.from(attachments.values()) },
         { text: data.response, type: 'bot' }
       ]);
@@ -129,8 +126,8 @@ export default function Component() {
 
       const data = await result.json();
       setResponse(data.response);
-      setMessages([...messages, { 
-        text: `File uploaded: ${file.name}`, 
+      setMessages([...messages, {
+        text: `File uploaded: ${file.name}`,
         type: 'user',
         files: [{ file, type: file.type }]
       }, {
@@ -152,7 +149,7 @@ export default function Component() {
   };
 
   const handleSend = () => {
-    if (message.trim() || attachments.size > 0) {
+    if (message.trim()) {
       sendMessage();
     }
   };
@@ -169,7 +166,7 @@ export default function Component() {
   const handleFileUpload = (event) => {
     const files = event.target.files;
     const newAttachments = new Map(attachments);
-    
+
     Array.from(files).forEach(file => {
       if (file.type === 'application/pdf') {
         uploadFile(file);
@@ -178,7 +175,7 @@ export default function Component() {
         newAttachments.set(file.name, { file, previewUrl, type: file.type });
       }
     });
-    
+
     setAttachments(newAttachments);
     event.target.value = '';
   };
@@ -231,9 +228,7 @@ export default function Component() {
                 {messages.map((msg, idx) => (
                   <div key={idx} className="flex gap-2 items-start">
                     <div
-                      className={`flex-1 bg-gray-100 rounded-lg p-4 shadow-sm ${
-                        msg.type === 'bot' ? 'bg-blue-50' : ''
-                      }`}
+                      className={`flex-1 bg-gray-100 rounded-lg p-4 shadow-sm ${msg.type === 'bot' ? 'bg-blue-50' : ''}`}
                       // Render formatted bot response as HTML
                       dangerouslySetInnerHTML={{
                         __html: msg.type === 'bot' ? formatText(msg.text) : msg.text,
@@ -254,39 +249,45 @@ export default function Component() {
             <div className="fixed bottom-0 left-0 w-full p-4 bg-white shadow-lg flex items-center gap-2">
               <input
                 type="file"
-                accept="image/*,application/pdf"
+                accept=".pdf, image/*"
                 onChange={handleFileUpload}
                 className="hidden"
-                id="fileUpload"
+                id="file-upload"
               />
-              <label htmlFor="fileUpload">
-                <button className="flex items-center justify-center bg-blue-900 text-white p-2 rounded">
-                  <BsUpload className="w-5 h-5" />
-                </button>
+              <label htmlFor="file-upload" className="cursor-pointer">
+                <BsUpload className="w-8 h-8 text-blue-900 hover:text-blue-700" />
               </label>
 
-              <input
-                type="text"
-                value={message}
-                onChange={(e) => setMessage(e.target.value)}
-                placeholder="Type your message..."
-                className="flex-1 p-2 border border-gray-300 rounded"
-              />
-              <button 
-                onClick={handleSend} 
-                className="flex items-center justify-center bg-blue-900 text-white p-2 rounded"
-                disabled={isLoading}
-              >
+              <div className="flex-1">
+                <input
+                  type="text"
+                  value={message}
+                  onChange={(e) => setMessage(e.target.value)}
+                  className="border border-gray-300 rounded-lg p-2 w-full"
+                  placeholder="Type your message..."
+                />
+              </div>
+              <button onClick={handleSend} className="bg-blue-900 text-white rounded-lg p-2 hover:bg-blue-700 flex items-center">
                 <BsSendFill className="w-5 h-5" />
               </button>
-              <button 
-                onClick={toggleVoiceInput} 
-                className={`flex items-center justify-center bg-blue-900 text-white p-2 rounded ${isListening ? 'bg-red-600' : ''}`}
-              >
-                {isListening ? <BsX className="w-5 h-5" /> : <BsMicFill className="w-5 h-5" />}
+              <button onClick={toggleVoiceInput} className={`flex items-center justify-center p-2 rounded-lg ${isListening ? 'bg-red-500' : 'bg-gray-300'}`}>
+                <BsMicFill className="w-5 h-5" />
               </button>
             </div>
           </div>
+        </div>
+      </div>
+      <div className="fixed bottom-16 left-0 right-0 p-4">
+        
+        <div className="flex flex-wrap gap-2">
+          {Array.from(attachments.keys()).map(fileName => (
+            <div key={fileName} className="flex items-center bg-gray-200 rounded p-2">
+              <span>{fileName}</span>
+              <button onClick={() => removeFile(fileName)} className="ml-2 text-red-500 hover:text-red-700">
+                <BsX />
+              </button>
+            </div>
+          ))}
         </div>
       </div>
     </>
