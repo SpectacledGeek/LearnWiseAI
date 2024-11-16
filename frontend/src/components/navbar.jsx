@@ -23,6 +23,9 @@ export const SlideTabsExample = () => {
         <NavButton to="/forum" isActive={location.pathname === '/forum'}>
           Community
         </NavButton>
+        <NavButton to="" isActive={location.pathname === ''}>
+          Documents
+        </NavButton>
       </div>
       
       {/* Sign out button pushed to the right */}

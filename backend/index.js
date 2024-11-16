@@ -12,19 +12,26 @@ import cookieParser from 'cookie-parser';
 import { User } from './src/models/user.model.js'; // Import models for User and Conversation
 import  {Conversation}  from './src/models/conversation.model.js';  // Import models for User and Conversation
 import userRoutes from './src/routes/user.router.js';
-import communityPostRouter from './src/routes/communityPost.routes.js';
+
 import mongoDB from './src/database/db.js';
+import http from "http"
+import { setupSocket } from './setupSocket.js';
+import postRoutes from "./src/routes/post.routes.js"
 
 // Load environment variables
 configDotenv();
 
 const app = express();
 const PORT = process.env.PORT || 5000;
+const server=http.createServer(app);
+const io=setupSocket(server);
 
 // Initialize MongoDB connection
 mongoDB();
 
 // Middleware setup
+app.set("io",io);
+app.use("/api/posts",postRoutes)
 app.use(cors({ origin: 'http://localhost:5173', credentials: true }));
 app.use(express.json());
 app.use(cookieParser());
@@ -64,7 +71,7 @@ app.get('/', (req, res) => {
 app.use('/api/user', userRoutes);
 
 // Community Posts Routes
-app.use('/api/community-posts', communityPostRouter);
+app.use('/api/community-posts', postRoutes);
 
 // User Registration
 app.post('/api/register', async (req, res) => {
